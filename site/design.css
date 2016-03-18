@@ -1,0 +1,57 @@
+#studentform{
+	text-align: center;
+	box-shadow: 5px;
+	border-radius: 10%;
+	background: white;
+	display: inline-block;
+	padding: 10px;
+}
+#submit{
+	background: #66AA44;
+	padding: 20px;
+	border-radius: 10%;
+	color: white;
+	font-size: 16px;
+}
+
+.info{
+	height: 20px;
+}
+body{
+	background: #F5CA5C;
+}
+#login{
+	text-align: center;
+}
+
+#sign{
+	font-size: 20px;
+
+}
+
+#allClasses{
+	max-width: 800px;
+	display: inline-block;
+	float: left;
+	text-align: left;
+}
+fieldset{
+	background:white;
+}
+
+legend{
+	background: #F5CA5C;
+}
+
+.class{
+	width: 200px;
+	margin-right: 10px;
+	display: inline-block;
+}
+
+#classesTaken{
+	display: inline-block;
+	float: right;
+	max-width:250px;
+	background: white;
+}
