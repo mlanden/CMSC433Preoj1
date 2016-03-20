@@ -68,7 +68,7 @@
 <form id="classesTaken" action="submitClasses.php" method="post">
 <p>Classes taken</p>
 <textarea id = "Selected" readonly></textarea>
-<input type="text"  id= "submitclass"/>
+<input type="text"  id= "submitclass" hidden />
 <input type="submit"/>
 </form>
 </body>
