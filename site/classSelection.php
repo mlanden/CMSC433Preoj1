@@ -22,7 +22,7 @@
 		$classes = mysql_query($sql, $dbc);
 		$i = 1;
 		while($row = mysql_fetch_assoc($classes)){
-			echo "<p class=\"class\"><input type=\"checkbox\" class = \"classoption\">" . $row['courseID'] . ": " . $row['name'] . "</input></p>";
+			echo "<p class=\"class\"><input type=\"checkbox\" class = \"classoption\" onclick = 'AddRemoveClass(this);' value = '" . $row['courseID'] . ": " . $row['name'] ."'/>" . $row['courseID'] . ": " . $row['name'] . "</p>";
 			if( $i % 3 == 0){
 				echo "<br>";
 			}
@@ -65,22 +65,29 @@
 </fieldset>
 </form>
 
-<form id="classesTaken">
+<form id="classesTaken" action="submitClasses.php" method="post">
 <p>Classes taken</p>
+<textarea id = "Selected" readonly></textarea>
+<input type="text"  id= "submitclass"/>
+<input type="submit"/>
 </form>
 </body>
 <footer>
 	<script type="text/javascript">
-		var classes = document.getElementsByClassName("classoption");
+		function AddRemoveClass(checkbox){
+			if(checkbox.checked){
+				var text = document.getElementById("Selected");
+				text.value += checkbox.value + "\n";
+				var submit = document.getElementById("submitclass");
+				submit.value += checkbox.value + ",";
+			}else{
+				var text = document.getElementById("Selected");
+				text.value = text.value.replace(checkbox.value + '\n', '');
+				var submit = document.getElementById("submitclass");
+				submit.value = submit.value.replace(checkbox.value+',','');
+			}
+		}
 
-		function AddRemoveClass(){
-			alert("Add or remove click class");
-		}
-		for(var i = 0; i < classes.length; i++){
-			alert(i);
-			classes[i].onclick = AddRemoveClass;
-		}
-		alert("Done");
 	</script>
 </footer>
 </html>
