@@ -52,6 +52,7 @@ legend{
 #classesTaken{
 	display: inline-block;
 	float: right;
-	max-width:250px;
+	width:250px;
 	background: white;
+	position: fixed;
 }

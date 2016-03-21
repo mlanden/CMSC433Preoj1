@@ -67,24 +67,22 @@
 
 <form id="classesTaken" action="submitClasses.php" method="post">
 <p>Classes taken</p>
-<textarea id = "Selected" readonly></textarea>
-<input type="text"  id= "submitclass" hidden />
+<textarea id = "Selected" name="submitclass"readonly></textarea>
+<input type="text" name="campusId" id="campusID" hidden>
 <input type="submit"/>
 </form>
 </body>
 <footer>
 	<script type="text/javascript">
+		var id = "<?php echo $_POST['campusId']?>";
+		var input = document.getElementById("campusID").value = id;
 		function AddRemoveClass(checkbox){
 			if(checkbox.checked){
 				var text = document.getElementById("Selected");
-				text.value += checkbox.value + "\n";
-				var submit = document.getElementById("submitclass");
-				submit.value += checkbox.value + ",";
+				text.value += checkbox.value + ",\n";
 			}else{
 				var text = document.getElementById("Selected");
-				text.value = text.value.replace(checkbox.value + '\n', '');
-				var submit = document.getElementById("submitclass");
-				submit.value = submit.value.replace(checkbox.value+',','');
+				text.value = text.value.replace(checkbox.value + ',\n', '');
 			}
 		}
 
