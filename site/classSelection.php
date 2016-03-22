@@ -1,16 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Computer Science Advising</title>
-	<link rel="stylesheet" type="text/css" href="design.css">
-</head>
-<body>
 <?php
-	$id = $_POST['campusId'];
+
+session_start();
+
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+
+<head>
+<title>Advising Sign Up</title>
+<!-- ============================================================== -->
+<meta name="resource-type" content="document" />
+<meta name="distribution" content="global" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Language" content="en-us" />
+<meta name="description" content="CMSC Graduation Path" />
+<meta name="keywords" content="CMSC Graduation Path" />
+<!-- ============================================================== -->
+
+<base target="_top" />
+<link rel="stylesheet" type="text/css" href="styler.css" />
+<link rel="icon" type="image/png" href="icon.png" />
+</head>
+
+<body id="login">
+
+<!-- Styling - Same on Every Page -->
+<div class="topContainer">
+  <div class="leftTopContainer">
+    
+  	<img src="umbcLogo.png" width="261" height="72" alt="umbcLogo" />
+  	<b>CMSC Graduation Path</b>
+  
+  	</div>
+    
+  <div class="rightTopContainer">
+  		<div class="rightTopContent">
+        <a href="index.php">Logout</a>	
+        </div>
+  
+    </div>
+</div>
+
+<body>
+
+<div class="container">
+<div class="inner-container">
+
+<?php
+	$studentID = strtoupper($_POST['studentID']);
 	$fname = $_POST['fname'];
 	$lname = $_POST['lname'];
 	$email = $_POST['email'];
-	$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$id', '$fname', '$lname', '$email')";
+
+	$_SESSION['studentID'] = $studentID;
+	$_SESSION['fname'] = $fname;
+	$_SESSION['lname'] = $lname;
+	$_SESSION['email'] = $email;
+
+	$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
 	$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 	mysql_select_db("dale2", $dbc);
 	$result = mysql_query($sql, $dbc);
@@ -68,14 +116,18 @@
 <form id="classesTaken" action="submitClasses.php" method="post">
 <p>Classes taken</p>
 <textarea id = "Selected" name="submitclass"readonly></textarea>
-<input type="text" name="campusId" id="campusID" hidden>
+<input type="text" name="studentID" id="studentID" hidden>
 <input type="submit"/>
 </form>
+
+</div>
+</div>
+
 </body>
 <footer>
 	<script type="text/javascript">
-		var id = "<?php echo $_POST['campusId']?>";
-		var input = document.getElementById("campusID").value = id;
+		var id = "<?php echo $_POST['studentID']?>";
+		var input = document.getElementById("studentID").value = id;
 		function AddRemoveClass(checkbox){
 			if(checkbox.checked){
 				var text = document.getElementById("Selected");
