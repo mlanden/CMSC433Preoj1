@@ -48,6 +48,11 @@ session_start();
 <div class="inner-container">
 
 <?php
+
+	include('CommonMethods.php');
+	$debug = false;
+	$COMMON = new Common($debug);
+
 	$studentID = strtoupper($_POST['studentID']);
 	$fname = $_POST['fname'];
 	$lname = $_POST['lname'];
@@ -58,10 +63,16 @@ session_start();
 	$_SESSION['lname'] = $lname;
 	$_SESSION['email'] = $email;
 
+
+	$sql = "SELECT * FROM `Students` WHERE `studentID` = '$studentID'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	$isThere = mysql_fetch_row($rs);
+	//echo $isThere[0];
+
+	if (empty($isThere)){
 	$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
-	$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
-	mysql_select_db("dale2", $dbc);
-	$result = mysql_query($sql, $dbc);
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	}
 
 	function classes($type){
 		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
@@ -104,7 +115,7 @@ session_start();
 	<?php classes("CSelec");?>
 </fieldset>
 <fieldset>
-	<legend>Technical Wlectives</legend>
+	<legend>Technical Electives</legend>
 	<?php classes("Techelec");?>
 </fieldset>
 <fieldset>
