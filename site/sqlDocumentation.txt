@@ -26,3 +26,12 @@ AND StudentCourses.studentID =  'VT25650' WHERE Courses.courseID NOT IN
     SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = 'VT25650'
     )
 
+SELECT Courses.courseID
+FROM  `Courses` 
+INNER JOIN  `StudentCourses` ON Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%')
+AND StudentCourses.studentID =  'VT25650' AND Courses.courseType Like '%CScore%' WHERE Courses.courseID NOT IN
+
+(
+    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = 'VT25650'
+    )
+

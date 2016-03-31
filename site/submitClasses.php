@@ -66,10 +66,14 @@ $classList = explode(",", $classes);
 //$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 //mysql_select_db("dale2", $dbc);
 
-$sql = "SELECT * FROM `Students` WHERE `studentID` = '$studentID'";
+$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	$isThere = mysql_fetch_row($rs);
 	//echo $isThere[0];
+
+//var_dump($isThere);
+
+var_dump($classList);
 
 if (empty($isThere)){
 
