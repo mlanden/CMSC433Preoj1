@@ -4,11 +4,6 @@ session_start();
 
 ?>
 
-<?php
-
-session_start();
-
-?>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
@@ -73,7 +68,7 @@ $sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 
 //var_dump($isThere);
 
-var_dump($classList);
+//var_dump($classList);
 
 if (empty($isThere)){
 
@@ -95,14 +90,30 @@ function classes($type){
 		$studentID = $_SESSION['studentID'];
 		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 		mysql_select_db("dale2", $dbc);
-		$sql = "SELECT Courses.courseID, Courses.name
+
+		if ($type == "Sci" || $type == "SciLab"){
+			$sql = "SELECT DISTINCT Courses.courseID, Courses.name
 				FROM  `Courses` 
-				INNER JOIN  `StudentCourses` ON Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%')
+				INNER JOIN  `StudentCourses` ON (Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%') OR Courses.prereqs LIKE '')
+				AND StudentCourses.studentID =  '$studentID' AND Courses.courseType = '$type' WHERE Courses.courseID NOT IN
+
+				(
+				    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = '$studentID'
+				)";
+		} else {
+		$sql = "SELECT DISTINCT Courses.courseID, Courses.name
+				FROM  `Courses` 
+				INNER JOIN  `StudentCourses` ON (Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%') OR Courses.prereqs LIKE '')
 				AND StudentCourses.studentID =  '$studentID' AND Courses.courseType Like '%$type%' WHERE Courses.courseID NOT IN
-				(SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = '$studentID')";
+
+				(
+				    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = '$studentID'
+				)";
+		}
 		//var_dump($sql);
 		$classes = mysql_query($sql, $dbc);
 		$i = 1;
+		print mysql_error();
 		while($row = mysql_fetch_assoc($classes)){
 			echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
 			if( $i % 3 == 0){
