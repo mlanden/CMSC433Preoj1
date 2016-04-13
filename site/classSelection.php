@@ -75,6 +75,12 @@ session_start();
 
 echo "
 		<form id='allClasses'>
+
+		<p class='instructP' style='background-color:white'>
+		Please select classes you have already taken by clicking the check box next to the class. When you are finished, hit the submit button to the right of your screen.
+
+		</p>
+
 		<fieldset>
 			<legend>Core Computer Science</legend>
 			" . classes("CScore") . "
@@ -112,10 +118,10 @@ echo "
 		";
 
 	} else {
-		echo "<form id='allClasses'><p class='centerP' style='background-color:white'>You have already chosen classes! 
+		echo "<form id='deleteClasses' action='deleteStudent.php' method='post'><p class='centerP' style='background-color:white'>You have already chosen classes! 
 		Please click the Submit button to the right to see the list of recommended classes. 
-		Otherwise, click the Restart button below to enter class information again. <br>
-		<button type='button' onclick=\"javascript:window.location='http://userpages.umbc.edu/~dale2/CMSC433/Project1/index.php'\">Restart</button>
+		Otherwise, click the Restart button below to enter class information again. <br> <br>
+		<input type='submit' id='restart' value='Restart'/>
 		</p>
 		</form>";
 	}

@@ -89,60 +89,83 @@ if (empty($isThere)){
 
 function classes($type){
 
-$studentID = $_SESSION['studentID'];
-	$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
-	mysql_select_db("dale2", $dbc);
+		$FUNCTIONCOMMON = new Common($debug);
 
-	$typeStr ="";
-	if ($type == "Sci" || $type == "SciLab"){
-		$typeStr = $type;
-	}else{
-		$typeStr = '%' . $type . '%';
-	}
-	$classes = $_POST['submitclass'];
-	$final = array();
-	$classList = explode(",", $classes);
-	foreach($classList as $class){
-		$inx = strpos($class, ':');
-		$key = substr($class, 0, $inx);
-		$classid = trim($key);
-		if(strlen($classid) < 4){
-			continue;
+		$studentID = $_SESSION['studentID'];
+		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
+		mysql_select_db("dale2", $dbc);
+
+		$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
+		$isThereNow = mysql_query($sql, $dbc);
+		//var_dump($isThereNow);
+
+		if (mysql_num_rows($isThereNow)==0){
+			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
+				FROM  `Courses` WHERE `prereqs` = '' AND `courseType`='$type'";
 		}
-		$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs FROM `Courses` WHERE Courses.prereqs LIKE '%$classid%'
-			AND Courses.courseType Like '$typeStr' AND Courses.courseID NOT IN
-	 		(
-	 		    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID WHERE StudentCourses.studentID = '$studentID'
-	 		)";
-	 	$classes = mysql_query($sql, $dbc);
-		while ($classinfo = mysql_fetch_assoc($classes)) {
-			$prereqs = split(" ", $classinfo['prereqs']);
-			$add = true;
-			foreach ($prereqs as $needed) {
-				$sql = "SELECT DISTINCT * FROM `StudentCourses` WHERE `studentID` = '$studentID' AND `courseID` = '$needed'";
-				$result = mysql_query($sql, $dbc);
-				if(mysql_num_rows($result) == 0){
-					$add = false;
-					break;
+
+		else if ($type == "Sci" || $type == "SciLab"){
+			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
+				FROM  `Courses` 
+				INNER JOIN  `StudentCourses` ON (Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%') OR Courses.prereqs LIKE '')
+				AND StudentCourses.studentID =  '$studentID' AND Courses.courseType = '$type' WHERE Courses.courseID NOT IN
+
+				(
+				    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = '$studentID'
+				)";
+		} else {
+		$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
+				FROM  `Courses` 
+				INNER JOIN  `StudentCourses` ON (Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%') OR Courses.prereqs LIKE '')
+				AND StudentCourses.studentID =  '$studentID' AND Courses.courseType Like '%$type%' WHERE Courses.courseID NOT IN
+
+				(
+				    SELECT Courses.courseID FROM `Courses` INNER JOIN `StudentCourses` ON Courses.courseID = StudentCourses.courseID AND StudentCourses.studentID = '$studentID'
+				)";
+		}
+		//var_dump($sql);
+		$classes = mysql_query($sql, $dbc);
+
+
+
+		$i = 1;
+		print mysql_error();
+		while($row = mysql_fetch_assoc($classes)){
+
+			$preClasses = explode(" ", $row['prereqs']);
+			//var_dump($preClasses);
+
+
+			if (sizeof($preClasses) > 1){
+				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND (`courseID` = '$preClasses[0]' OR  `courseID` = '$preClasses[1]')";
+				//$theCount = mysql_query($sql, $dbc);
+				//$count = mysql_fetch_array($classes);
+				//var_dump($theCount[0]);
+				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+				$count = mysql_fetch_row($rs);
+
+
+				if ($count[0] > 1){
+					echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
+					if( $i % 3 == 0){
+						echo "<br>";
+					}
+					$i++;
+				} else {
+					continue;
 				}
+
 			}
-			if($add AND ! in_array($classinfo['courseID'] . ": " . $classinfo['name'], $final)){
-				$final[] = $classinfo['courseID'] . ": " . $classinfo['name'];
+			else{
+				echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
+				if( $i % 3 == 0){
+					echo "<br>";
+				}
+				$i++;
 			}
 		}
-
 	}
-
-	$i = 0;
-	foreach ($final as $class) {
-		$i++;
-		echo "<p class=\"class\">" . $class . "</p>";
-		if($i % 3 ==0){
-			echo("<br>");
-		}
-	}
-}
-	?>
+?>
 <p style='background-color:white'>The classes you should take going forward include: </p>
 <form id="allClasses">
 <fieldset>
