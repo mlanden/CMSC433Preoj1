@@ -42,7 +42,7 @@ session_start();
     </div>
 </div>
 
-<div class="container">
+<div class="indexContainer">
 <div class="inner-container">
 
 
@@ -58,7 +58,7 @@ Student ID <br>
 	<input type="text" size="25" maxlength="7" name="studentID"><br> <br />
 Email <br>
 	<input type="text" size="25" maxlength="50" name="email"><br> <br />
-<input type='submit' value='submit' id='submit'>
+<input type='submit' value='Submit' id='submit'>
 
 </form>
 <br /><br /> 

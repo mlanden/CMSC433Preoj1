@@ -44,8 +44,8 @@ session_start();
 
 <body>
 
-<div class="container">
-<div class="inner-container">
+<div class="container" style="background-color:transparent">
+<div class="inner-container" style="background-color:transparent">
 
 <?php
 
@@ -72,6 +72,52 @@ session_start();
 	if (empty($isThere)){
 	$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+
+echo "
+		<form id='allClasses'>
+		<fieldset>
+			<legend>Core Computer Science</legend>
+			" . classes("CScore") . "
+		</fieldset>
+		<fieldset>
+			<legend>Required Math</legend>
+			".classes("Reqmath")."
+		</fieldset>
+		<fieldset>
+			<legend>Required Stat</legend>
+			".classes("Reqstat")."
+		</fieldset>
+		<fieldset>
+			<legend>Science</legend>
+			".classes("Sci")."
+		</fieldset>
+		<fieldset>
+			<legend>Science with Lab</legend>
+			".classes("SciLab")."
+		</fieldset>
+		<fieldset>
+			<legend>Computer Science Electives</legend>
+			".classes("CSelec")."
+		</fieldset>
+		<fieldset>
+			<legend>Technical Electives</legend>
+			".classes("Techelec")."
+		</fieldset>
+		<fieldset>
+			<legend>Other Compter Science</legend>
+			".classes("otherCS")."
+		</fieldset>
+		</form>
+
+		";
+
+	} else {
+		echo "<form id='allClasses'><p class='centerP' style='background-color:white'>You have already chosen classes! 
+		Please click the Submit button to the right to see the list of recommended classes. 
+		Otherwise, click the Restart button below to enter class information again. <br>
+		<button type='button' onclick=\"javascript:window.location='http://userpages.umbc.edu/~dale2/CMSC433/Project1/index.php'\">Restart</button>
+		</p>
+		</form>";
 	}
 
 	function classes($type){
@@ -80,15 +126,19 @@ session_start();
 		$sql = "SELECT `courseID`, `name` FROM `Courses` WHERE `courseType` LIKE '%$type%'";
 		$classes = mysql_query($sql, $dbc);
 		$i = 1;
+		$str = "";
 		while($row = mysql_fetch_assoc($classes)){
-			echo "<p class=\"class\"><input type=\"checkbox\" class = \"classoption\" onclick = 'AddRemoveClass(this);' value = '" . $row['courseID'] . ": " . $row['name'] ."'/>" . $row['courseID'] . ": " . $row['name'] . "</p>";
+			$str .= "<p class=\"class\"><input type=\"checkbox\" class = \"classoption\" onclick = 'AddRemoveClass(this);' value = '" . $row['courseID'] . ": " . $row['name'] ."'/>" . $row['courseID'] . ": " . $row['name'] . "</p>";
 			if( $i % 3 == 0){
-				echo "<br>";
+				$str .= "<br>";
 			}
 			$i++;
 		}
+		return $str;
 	}
 ?>
+
+<!--
 <form id="allClasses">
 <fieldset>
 	<legend>Core Computer Science</legend>
@@ -123,12 +173,13 @@ session_start();
 	<?php classes("otherCS");?>
 </fieldset>
 </form>
+-->
 
 <form id="classesTaken" action="submitClasses.php" method="post">
-<p>Classes taken</p>
-<textarea id = "Selected" name="submitclass"readonly></textarea>
+<p><b>Next Semester Classes</b></p>
+<textarea id = "Selected" name="submitclass" readonly hidden></textarea>
 <input type="text" name="studentID" id="studentID" hidden>
-<input type="submit"/>
+<input type="submit" id="submit" value='Submit'/>
 </form>
 
 </div>

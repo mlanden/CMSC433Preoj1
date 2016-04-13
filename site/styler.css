@@ -17,13 +17,16 @@
 	font-size: 16px;
 }
 
+.centerP{
+	text-align: center;
+	width: 675px;
+	height: 100px;
+	border: 1px solid black;
+}
+
 .info{
 	height: 20px;
 }
-body{
-	background: #F5CA5C;
-}
-
 
 #login{
 	text-align: center;
@@ -59,11 +62,14 @@ legend{
 	float: right;
 	width:250px;
 	background: white;
+	margin-top: 10px;
 	position: fixed;
+	padding-bottom: 25px;
+	border: 1px solid black;
 }
 
 body {
-	background: #DAA520;
+	background: 	#40E0D0;
 	font-size: 14px;
 	line-height: 18px;
 	font-family: verdana, sans-serif;
@@ -104,6 +110,14 @@ body {
 	background: white;
 	width: 700px;
 	min-height: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	}
+.indexContainer {
+	background: white;
+	width: 700px;
+	min-height: 1000px;
+	margin-top:12px;
 	margin-left: auto;
 	margin-right: auto;
 	}

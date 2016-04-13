@@ -45,8 +45,8 @@ session_start();
 
 <body>
 
-<div class="container">
-<div class="inner-container">
+<div class="container" style="background-color:transparent">
+<div class="inner-container" style="background-color:transparent">
 
 <?php
 
@@ -61,7 +61,7 @@ $classList = explode(",", $classes);
 //$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 //mysql_select_db("dale2", $dbc);
 
-$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
+	$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	$isThere = mysql_fetch_row($rs);
 	//echo $isThere[0];
@@ -85,13 +85,24 @@ if (empty($isThere)){
 		}
 	}
 }
+	
 
 function classes($type){
+
 		$studentID = $_SESSION['studentID'];
 		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 		mysql_select_db("dale2", $dbc);
 
-		if ($type == "Sci" || $type == "SciLab"){
+		$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
+		$isThereNow = mysql_query($sql, $dbc);
+		//var_dump($isThereNow);
+
+		if (mysql_num_rows($isThereNow)==0){
+			$sql = "SELECT DISTINCT Courses.courseID, Courses.name
+				FROM  `Courses` WHERE `prereqs` = '' AND `courseType`='$type'";
+		}
+
+		else if ($type == "Sci" || $type == "SciLab"){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name
 				FROM  `Courses` 
 				INNER JOIN  `StudentCourses` ON (Courses.prereqs LIKE CONCAT('%', StudentCourses.courseID, '%') OR Courses.prereqs LIKE '')
@@ -123,7 +134,7 @@ function classes($type){
 		}
 	}
 ?>
-<p>The classes you should take going forward include: </p>
+<p style='background-color:white'>The classes you should take going forward include: </p>
 <form id="allClasses">
 <fieldset>
 	<legend>Core Computer Science</legend>
