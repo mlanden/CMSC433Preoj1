@@ -138,11 +138,16 @@ function classes($type){
 
 			if (sizeof($preClasses) > 1){
 				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND (`courseID` = '$preClasses[0]' OR  `courseID` = '$preClasses[1]')";
-				//$theCount = mysql_query($sql, $dbc);
-				//$count = mysql_fetch_array($classes);
-				//var_dump($theCount[0]);
 				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 				$count = mysql_fetch_row($rs);
+
+				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND `courseID` LIKE 'CMSC4%'";
+				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+				$special = mysql_fetch_row($rs);
+
+				if ($special[0] > 0){
+					$count[0] += 1;
+				}
 
 
 				if ($count[0] > 1){
