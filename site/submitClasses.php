@@ -62,7 +62,7 @@ $classList = explode(",", $classes);
 
 //query to see if student courses have previously been added
 $sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
-$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+$rs  = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 $isThere = mysql_fetch_row($rs);
 
 //if they have not been added, we format the results from the previous page
@@ -73,8 +73,9 @@ if (empty($isThere)){
 		$inx = strpos($class, ':');
 		$key = substr($class, 0, $inx);
 		$classid = trim($key);
-
+		echo $class . "CLASS";
 		if(strlen($key) > 0){
+
 			$sql = "INSERT INTO `StudentCourses`(`courseID`, `studentID`) VALUES ('$classid','$studentID')";
 			$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 		}
