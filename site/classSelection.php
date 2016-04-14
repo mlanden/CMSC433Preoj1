@@ -76,6 +76,7 @@ session_start();
 		$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
 		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
+		// the form is seperated into different section one for each requirement type.  outside function is used to input classes
 		echo "
 		<form id='allClasses'>
 
@@ -130,7 +131,11 @@ session_start();
 		</form>";
 	}
 
-	//function that grabs a list of classes from the database and sends their display back to the HTML field to be displayed
+	/*********
+	/ classes($type)
+	/ $type is the string that matches requirement types in the database
+	/*unction that grabs a list of classes from the database and sends their display back to the HTML field to be displayed
+	*********/
 	function classes($type){
 		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 		mysql_select_db("dale2", $dbc);
@@ -167,15 +172,16 @@ session_start();
 	<script type="text/javascript">
 		var id = "<?php echo $_POST['studentID']?>";
 		var input = document.getElementById("studentID").value = id;
-		function AddRemoveClass(checkbox){
-			if(checkbox.checked){
-				var text = document.getElementById("Selected");
-				text.value += checkbox.value + ",\n";
-			}else{
-				var text = document.getElementById("Selected");
-				text.value = text.value.replace(checkbox.value + ',\n', '');
-			}
-		}
+		
+		// function AddRemoveClass(checkbox){
+		// 	if(checkbox.checked){
+		// 		var text = document.getElementById("Selected");
+		// 		text.value += checkbox.value + ",\n";
+		// 	}else{
+		// 		var text = document.getElementById("Selected");
+		// 		text.value = text.value.replace(checkbox.value + ',\n', '');
+		// 	}
+		// }
 
 	</script>
 </footer>

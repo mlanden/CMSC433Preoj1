@@ -81,8 +81,11 @@ if (empty($isThere)){
 	}
 }
 	
-//this is the true meat of the program
-//the beast function
+/*************
+classes $type
+type- requirement type from database
+uses joins to pull out the classes not taken which the student has a prereq taken already
+*************/
 //this function chooses which classes to take next semester based off of previously selected classes
 function classes($type){
 
@@ -95,11 +98,13 @@ function classes($type){
 		$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 		$isThereNow = mysql_query($sql, $dbc);
 
+		// pulls all courses where either the student took at least one prereq or the class has no prereqs so they could take them
+		// checks for multiple prereqsbelow
 		if (mysql_num_rows($isThereNow)==0){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
 				FROM  `Courses` WHERE `prereqs` = '' AND `courseType`='$type'";
 		}
-
+		//solving the too broad regex overlap for sci
 		else if ($type == "Sci" || $type == "SciLab"){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
 				FROM  `Courses` 
@@ -122,20 +127,19 @@ function classes($type){
 		//var_dump($sql);
 		$classes = mysql_query($sql, $dbc);
 
-
-
 		$i = 1;
-		print mysql_error();
 		while($row = mysql_fetch_assoc($classes)){
 
 			$preClasses = explode(" ", $row['prereqs']);
-
+			// this if statement checks if the class that was recomended has more than 1 prereq.  
+			// Because the cs has at most 2 prereqs, we check if the student took both classes before recomending it.
 			if (sizeof($preClasses) > 1){
 				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND (`courseID` = '$preClasses[0]' OR  `courseID` = '$preClasses[1]')";
 				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 				$count = mysql_fetch_row($rs);
 
 				if ($count[0] > 1){
+					//if the student meets all prereqs, print out a recomendation to take class
 					echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
 					if( $i % 3 == 0){
 						echo "<br>";
@@ -147,6 +151,7 @@ function classes($type){
 
 			}
 			else{
+				// if only one prereq, this will have been taken bcause of the sql that pulled classes
 				echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
 				if( $i % 3 == 0){
 					echo "<br>";
@@ -157,6 +162,7 @@ function classes($type){
 	}
 ?>
 <p style='background-color:white'>The classes you should take going forward include: </p>
+<!-- form is broken up into requirement types to show what could be taken -->
 <form id="allClasses">
 <fieldset>
 	<legend>Core Computer Science</legend>
