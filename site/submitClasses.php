@@ -50,26 +50,23 @@ session_start();
 
 <?php
 
+//includes database easy access code
 include('CommonMethods.php');
 $debug = false;
 $COMMON = new Common($debug);
 
+//collects session variables and posted information
 $studentID = $_SESSION['studentID'];
 $classes = $_POST['submitclass'];
 $classList = explode(",", $classes);
 
-//$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
-//mysql_select_db("dale2", $dbc);
+//query to see if student courses have previously been added
+$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
+$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+$isThere = mysql_fetch_row($rs);
 
-	$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
-	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-	$isThere = mysql_fetch_row($rs);
-	//echo $isThere[0];
-
-//var_dump($isThere);
-
-//var_dump($classList);
-
+//if they have not been added, we format the results from the previous page
+//and add the student's courses to the database
 if (empty($isThere)){
 
 	foreach($classList as $class){
@@ -79,14 +76,14 @@ if (empty($isThere)){
 
 		if(strlen($key) > 0){
 			$sql = "INSERT INTO `StudentCourses`(`courseID`, `studentID`) VALUES ('$classid','$studentID')";
-			//var_dump($sql);
 			$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-			//mysql_query($sql, $dbc);
 		}
 	}
 }
 	
-
+//this is the true meat of the program
+//the beast function
+//this function chooses which classes to take next semester based off of previously selected classes
 function classes($type){
 
 		$FUNCTIONCOMMON = new Common($debug);
@@ -97,7 +94,6 @@ function classes($type){
 
 		$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 		$isThereNow = mysql_query($sql, $dbc);
-		//var_dump($isThereNow);
 
 		if (mysql_num_rows($isThereNow)==0){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
@@ -133,17 +129,11 @@ function classes($type){
 		while($row = mysql_fetch_assoc($classes)){
 
 			$preClasses = explode(" ", $row['prereqs']);
-			//var_dump($preClasses);
-
 
 			if (sizeof($preClasses) > 1){
 				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND (`courseID` = '$preClasses[0]' OR  `courseID` = '$preClasses[1]')";
-				//$theCount = mysql_query($sql, $dbc);
-				//$count = mysql_fetch_array($classes);
-				//var_dump($theCount[0]);
 				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 				$count = mysql_fetch_row($rs);
-
 
 				if ($count[0] > 1){
 					echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
