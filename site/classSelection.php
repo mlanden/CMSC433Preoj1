@@ -92,7 +92,7 @@ session_start();
 		<fieldset>
 			<legend>Required Math</legend>
 			".classes("Reqmath")."
- 		</fieldset>
+		</fieldset>
 		<fieldset>
 			<legend>Required Stat</legend>
 			".classes("Reqstat")."
@@ -173,15 +173,15 @@ session_start();
 		var id = "<?php echo $_POST['studentID']?>";
 		var input = document.getElementById("studentID").value = id;
 		
-		function AddRemoveClass(checkbox){
-			if(checkbox.checked){
-				var text = document.getElementById("Selected");
-				text.value += checkbox.value + ",\n";
-			}else{
-				var text = document.getElementById("Selected");
-				text.value = text.value.replace(checkbox.value + ',\n', '');
-			}
-		}
+		// function AddRemoveClass(checkbox){
+		// 	if(checkbox.checked){
+		// 		var text = document.getElementById("Selected");
+		// 		text.value += checkbox.value + ",\n";
+		// 	}else{
+		// 		var text = document.getElementById("Selected");
+		// 		text.value = text.value.replace(checkbox.value + ',\n', '');
+		// 	}
+		// }
 
 	</script>
 </footer>
