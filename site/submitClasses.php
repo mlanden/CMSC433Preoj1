@@ -50,44 +50,43 @@ session_start();
 
 <?php
 
-//includes database easy access code
 include('CommonMethods.php');
 $debug = false;
 $COMMON = new Common($debug);
 
-//collects session variables and posted information
 $studentID = $_SESSION['studentID'];
 $classes = $_POST['submitclass'];
 $classList = explode(",", $classes);
 
-//query to see if student courses have previously been added
-$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
-$rs  = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
-$isThere = mysql_fetch_row($rs);
+//$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
+//mysql_select_db("dale2", $dbc);
 
-//if they have not been added, we format the results from the previous page
-//and add the student's courses to the database
+	$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	$isThere = mysql_fetch_row($rs);
+	//echo $isThere[0];
+
+//var_dump($isThere);
+
+//var_dump($classList);
+
 if (empty($isThere)){
 
 	foreach($classList as $class){
 		$inx = strpos($class, ':');
 		$key = substr($class, 0, $inx);
 		$classid = trim($key);
-		echo $class . "CLASS";
-		if(strlen($key) > 0){
 
+		if(strlen($key) > 0){
 			$sql = "INSERT INTO `StudentCourses`(`courseID`, `studentID`) VALUES ('$classid','$studentID')";
+			//var_dump($sql);
 			$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+			//mysql_query($sql, $dbc);
 		}
 	}
 }
 	
-/*************
-classes $type
-type- requirement type from database
-uses joins to pull out the classes not taken which the student has a prereq taken already
-*************/
-//this function chooses which classes to take next semester based off of previously selected classes
+
 function classes($type){
 
 		$FUNCTIONCOMMON = new Common($debug);
@@ -98,14 +97,13 @@ function classes($type){
 
 		$sql = "SELECT * FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 		$isThereNow = mysql_query($sql, $dbc);
+		//var_dump($isThereNow);
 
-		// pulls all courses where either the student took at least one prereq or the class has no prereqs so they could take them
-		// checks for multiple prereqsbelow
 		if (mysql_num_rows($isThereNow)==0){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
 				FROM  `Courses` WHERE `prereqs` = '' AND `courseType`='$type'";
 		}
-		//solving the too broad regex overlap for sci
+
 		else if ($type == "Sci" || $type == "SciLab"){
 			$sql = "SELECT DISTINCT Courses.courseID, Courses.name, Courses.prereqs
 				FROM  `Courses` 
@@ -128,19 +126,31 @@ function classes($type){
 		//var_dump($sql);
 		$classes = mysql_query($sql, $dbc);
 
+
+
 		$i = 1;
+		print mysql_error();
 		while($row = mysql_fetch_assoc($classes)){
 
 			$preClasses = explode(" ", $row['prereqs']);
-			// this if statement checks if the class that was recomended has more than 1 prereq.  
-			// Because the cs has at most 2 prereqs, we check if the student took both classes before recomending it.
+			//var_dump($preClasses);
+
+
 			if (sizeof($preClasses) > 1){
 				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND (`courseID` = '$preClasses[0]' OR  `courseID` = '$preClasses[1]')";
 				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 				$count = mysql_fetch_row($rs);
 
+				$sql = "SELECT COUNT(*) FROM `StudentCourses` WHERE `studentID` = '$studentID' AND `courseID` LIKE 'CMSC4%'";
+				$rs = $FUNCTIONCOMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+				$special = mysql_fetch_row($rs);
+
+				if ($special[0] > 0){
+					$count[0] += 1;
+				}
+
+
 				if ($count[0] > 1){
-					//if the student meets all prereqs, print out a recomendation to take class
 					echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
 					if( $i % 3 == 0){
 						echo "<br>";
@@ -152,7 +162,6 @@ function classes($type){
 
 			}
 			else{
-				// if only one prereq, this will have been taken bcause of the sql that pulled classes
 				echo "<p class=\"class\">" . $row['courseID'] . ": " . $row['name'] . "</p>";
 				if( $i % 3 == 0){
 					echo "<br>";
@@ -163,7 +172,6 @@ function classes($type){
 	}
 ?>
 <p style='background-color:white'>The classes you should take going forward include: </p>
-<!-- form is broken up into requirement types to show what could be taken -->
 <form id="allClasses">
 <fieldset>
 	<legend>Core Computer Science</legend>

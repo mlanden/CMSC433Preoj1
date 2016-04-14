@@ -56,7 +56,6 @@ $COMMON = new Common($debug);
 
 $studentID = $_SESSION['studentID'];
 
-// remove all info related to the student in the database  
 	$sql = "DELETE FROM `StudentCourses` WHERE `studentID` = '$studentID'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 

@@ -48,36 +48,32 @@ session_start();
 <div class="inner-container" style="background-color:transparent">
 
 <?php
-	
-	//include SQL connectivity file for easy database access
+
 	include('CommonMethods.php');
 	$debug = false;
 	$COMMON = new Common($debug);
 
-	//grabs form data from index page
 	$studentID = strtoupper($_POST['studentID']);
 	$fname = $_POST['fname'];
 	$lname = $_POST['lname'];
 	$email = $_POST['email'];
 
-	//creates session data of the form information
 	$_SESSION['studentID'] = $studentID;
 	$_SESSION['fname'] = $fname;
 	$_SESSION['lname'] = $lname;
 	$_SESSION['email'] = $email;
 
-	//sql query to see if student exists
+
 	$sql = "SELECT * FROM `Students` WHERE `studentID` = '$studentID'";
 	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 	$isThere = mysql_fetch_row($rs);
+	//echo $isThere[0];
 
-	//if no student is currently in the database, display the list of classes
 	if (empty($isThere)){
-		$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
-		$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
+	$sql = "INSERT INTO `Students`(`studentID`, `fname`, `lname`, `email`) VALUES ('$studentID', '$fname', '$lname', '$email')";
+	$rs = $COMMON->executeQuery($sql, $_SERVER["SCRIPT_NAME"]);
 
-		// the form is seperated into different section one for each requirement type.  outside function is used to input classes
-		echo "
+echo "
 		<form id='allClasses'>
 
 		<p class='instructP' style='background-color:white'>
@@ -92,7 +88,7 @@ session_start();
 		<fieldset>
 			<legend>Required Math</legend>
 			".classes("Reqmath")."
- 		</fieldset>
+		</fieldset>
 		<fieldset>
 			<legend>Required Stat</legend>
 			".classes("Reqstat")."
@@ -121,7 +117,6 @@ session_start();
 
 		";
 
-	//otherwise print out that they are already entered into the database and can choose to start over
 	} else {
 		echo "<form id='deleteClasses' action='deleteStudent.php' method='post'><p class='centerP' style='background-color:white'>You have already chosen classes! 
 		Please click the Submit button to the right to see the list of recommended classes. 
@@ -131,11 +126,6 @@ session_start();
 		</form>";
 	}
 
-	/*********
-	/ classes($type)
-	/ $type is the string that matches requirement types in the database
-	/*unction that grabs a list of classes from the database and sends their display back to the HTML field to be displayed
-	*********/
 	function classes($type){
 		$dbc = mysql_connect("studentdb-maria.gl.umbc.edu", "dale2", "cmsc433") or die(mysql_error());
 		mysql_select_db("dale2", $dbc);
@@ -154,7 +144,43 @@ session_start();
 	}
 ?>
 
-<!-- Floating form where classes get entered. Data is hidden -->
+<!--
+<form id="allClasses">
+<fieldset>
+	<legend>Core Computer Science</legend>
+	<?php classes("CScore");?>
+</fieldset>
+<fieldset>
+	<legend>Required Math</legend>
+	<?php classes("Reqmath");?>
+</fieldset>
+<fieldset>
+	<legend>Required Stat</legend>
+	<?php classes("Reqstat");?>
+</fieldset>
+<fieldset>
+	<legend>Science</legend>
+	<?php classes("Sci");?>
+</fieldset>
+<fieldset>
+	<legend>Science with Lab</legend>
+	<?php classes("SciLab");?>
+</fieldset>
+<fieldset>
+	<legend>Computer Science Electives</legend>
+	<?php classes("CSelec");?>
+</fieldset>
+<fieldset>
+	<legend>Technical Electives</legend>
+	<?php classes("Techelec");?>
+</fieldset>
+<fieldset>
+	<legend>Other Compter Science</legend>
+	<?php classes("otherCS");?>
+</fieldset>
+</form>
+-->
+
 <form id="classesTaken" action="submitClasses.php" method="post">
 <p><b>Next Semester Classes</b></p>
 <textarea id = "Selected" name="submitclass" readonly hidden></textarea>
@@ -167,12 +193,9 @@ session_start();
 
 </body>
 <footer>
-
-	<!-- Script that places the selected classes into the floating form -->
 	<script type="text/javascript">
 		var id = "<?php echo $_POST['studentID']?>";
 		var input = document.getElementById("studentID").value = id;
-		
 		function AddRemoveClass(checkbox){
 			if(checkbox.checked){
 				var text = document.getElementById("Selected");
